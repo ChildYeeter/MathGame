@@ -1,150 +1,152 @@
 ﻿Console.Title = "Math Game";
 
+Game game = new Game();
 while (true)
 {
-    Game test = new Game();
-    test.Start();
+    game.Start();
+    if(game.choice is Quit)
+    {
+        Console.WriteLine("Press any key to quit!");
+        Console.ReadKey(true);
+        break;
+    }
 }
-
 public class Game
 {
     public int score = 0;
-    public List<int> results { get; set; } = new List<int>();
+    public List<int> history = new List<int>();
+    public MathOperations? choice;
 
     public void Start()
     {
-        Console.WriteLine("Welcome!! What game would you like to play?");
-        Console.WriteLine("1)Addition\n2)Subtraction\n3)Division\n4)Multiplication\n5)View History");
-
-        MathOperations choice = Console.ReadLine()?.ToLower() switch
+        Console.WriteLine("Welcome!! What would you like to do?");
+        Console.WriteLine("A - Addition\nS - Subtraction\nD - Division\nM - Multiplication\nQ - Quit");
+        choice = Console.ReadLine()?.ToLower() switch
         {
-            "addition" or "1"       => new Addition(),
-            "subtraction" or "2"    => new Subtraction(),
-            "division" or "3"       => new Division(),
-            "multiplication" or "4" => new Multiplication(),
-            "view history" or "5"   => new History(),
-            _                       => new Addition()
+            "a" => new Addition(),
+            "s" => new Subtraction(),
+            "m" => new Multiplication(),
+            "d" => new Division(),
+            "q" => new Quit(),
+            "h" => new History(),
+            _   => new Addition()
         };
 
-        choice.Operation(this);
+        if (choice is Quit)
+        {
+            choice.Operation(this);
+            return;
+        }
+        else if(choice is History)
+        {
+            choice.Operation(this);
+            return;
+        }
+        else 
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                Console.Clear();
+                choice.Operation(this);
+            }
+            history.Add(this.score);
+        }
+
+        Console.WriteLine("Score: " + this.score);
     }
 }
 public interface MathOperations
 {
-   public void Operation(Game game);
+    public void Operation(Game game);
 }
 
 public class Addition : MathOperations
 {
-    Random rnd = new Random();
     public void Operation(Game game)
     {
-        for (int i = 0; i < 5; i++)
+        Random rnd = new Random();
+        int num1 = rnd.Next(1, 10);
+        int num2 = rnd.Next(1, 10);
+
+        Console.WriteLine($"{num1} + {num2} = ?");
+        int answer = Convert.ToInt32(Console.ReadLine());
+        if(answer == num1 + num2)
         {
-            int num1 = rnd.Next(1, 100);
-            int num2 = rnd.Next(1, 100);
-
-            Console.WriteLine($"{num1} + {num2} = ?");
-            int answer = Convert.ToInt32(Console.ReadLine());
-
-            if (answer == num1 + num2)
-            {
-                Console.WriteLine("Correct!");
-                game.score += 1;
-            }
-            else
-                Console.WriteLine("Wrong!");
+            game.score++;
         }
-
-        game.results.Add(game.score);
-    }
-}
-
-public class Subtraction : MathOperations
-{
-    Random rnd = new Random();
-    public void Operation(Game game)
-    {
-        for (int i = 0; i < 5; i++)
-        {
-            int num1 = rnd.Next(1, 100);
-            int num2 = rnd.Next(1, 100);
-
-            Console.WriteLine($"{num1} - {num2} = ?");
-            int answer = Convert.ToInt32(Console.ReadLine());
-
-            if (answer == num1 - num2)
-            {
-                Console.WriteLine("Correct!");
-                game.score += 1;
-            }
-            else
-                Console.WriteLine("Wrong!");
-        }
-        game.results.Add(game.score);
-    }
-}
-
-
-//needs working
-public class Division : MathOperations
-{
-    Random rnd = new Random();
-    public void Operation(Game game)
-    {
-        for (int i = 0; i < 5; i++)
-        {
-            int num1 = rnd.Next(0, 100)%2;
-            int num2 = rnd.Next(1, 10)%2;
-
-            Console.WriteLine($"{num1}/{num2} = ?");
-            int answer = Convert.ToInt32(Console.ReadLine());
-
-            if (answer == num1/num2)
-            {
-                Console.WriteLine("Correct!");
-                game.score += 1;
-            }
-            else
-                Console.WriteLine("Wrong!");
-        }
-        game.results.Add(game.score);
+        
     }
 }
 
 public class Multiplication : MathOperations
 {
-    Random rnd = new Random();
     public void Operation(Game game)
     {
-        for (int i = 0; i < 5; i++)
+        Random rnd = new Random();
+        int num1 = rnd.Next(1, 10);
+        int num2 = rnd.Next(1, 10);
+
+        Console.WriteLine($"{num1} x {num2} = ?");
+        int answer = Convert.ToInt32(Console.ReadLine());
+        if (answer == num1 * num2)
         {
-            int num1 = rnd.Next(1, 100);
-            int num2 = rnd.Next(1, 100);
-
-            Console.WriteLine($"{num1} x {num2} = ?");
-            int answer = Convert.ToInt32(Console.ReadLine());
-
-            if (answer == num1 * num2)
-            {
-                Console.WriteLine("Correct!");
-                game.score += 1;
-            }
-            else
-                Console.WriteLine("Wrong!");
+            game.score++;
         }
-        game.results.Add(game.score);
+
     }
+}
+public class Subtraction : MathOperations
+{
+    public void Operation(Game game)
+    {
+        Random rnd = new Random();
+        int num1 = rnd.Next(1, 10);
+        int num2 = rnd.Next(1, 10);
+
+        Console.WriteLine($"{num1} - {num2} = ?");
+        int answer = Convert.ToInt32(Console.ReadLine());
+        if (answer == num1 - num2)
+        {
+            game.score++;
+        }
+
+    }
+}
+public class Division : MathOperations
+{
+    public void Operation(Game game)
+    {
+        Random rnd = new Random();
+        int num1 = rnd.Next(0, 100)*2;
+        int num2 = rnd.Next(1,10)/2;
+
+        Console.WriteLine($"{num1}/{num2} = ?");
+        int answer = Convert.ToInt32(Console.ReadLine());
+        if (answer == num1 / num2)
+        {
+            game.score++;
+        }
+
+    }
+}
+
+public class Quit : MathOperations
+{
+    public void Operation(Game game) { } 
 }
 
 public class History : MathOperations
 {
-    public void Operation( Game game)
+    public void Operation(Game game)
     {
-        foreach(int item in game.results)
+
+        Console.Clear();
+        Console.WriteLine("History:");
+        Console.WriteLine("-------------------------------------------------------");
+        foreach (int item in game.history)
         {
-            int i = 1;
-            Console.WriteLine($"{i}){item}");
+            Console.WriteLine(item);
         }
+        Console.WriteLine("-------------------------------------------------------");
     }
 }

@@ -1,0 +1,2 @@
+﻿Console.Title = "Math Game";
+
